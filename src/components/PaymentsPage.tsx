@@ -8,18 +8,24 @@ export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     const getPayments = async () => {
       setLoading(true);
       setError(null);
-      const result = await getPaymentsQuery();
-      setPayments(result.payments);
-      setLoading(false);
-    }
+  
+      try {
+        const result = await getPaymentsQuery();
+        setPayments(result.payments);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
     getPayments();
   }, []);
-
 
   return (
     <Container>

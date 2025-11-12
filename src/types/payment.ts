@@ -12,4 +12,8 @@ export interface Payment {
 }
 
 export interface PaymentSearchResponse {
+    payments: Payment[];
+    total: number;
+    page: number;
+    pageSize: number;
 }
