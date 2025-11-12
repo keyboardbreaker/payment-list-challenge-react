@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Container } from './components'
+import { Container, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
+import { formatCurrency } from "../utils/helpers";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -29,33 +30,45 @@ export const PaymentsPage = () => {
 
   return (
     <Container>
-        {loading && <p>Loading payments...</p>}
+        {loading && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <Spinner />
+            <span>Loading payments...</span>
+          </div>
+        )}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && (
-                  <table className="min-w-full border mt-4">
-                  <thead>
-                    <tr>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_PAYMENT_ID}</th>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_DATE}</th>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_AMOUNT}</th>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_CUSTOMER}</th>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_CURRENCY}</th>
-                      <th className="border px-4 py-2 text-left">{I18N.TABLE_HEADER_STATUS}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+          <TableWrapper>
+            <Table>
+                  <TableHeaderWrapper>
+                    <TableHeaderRow>
+                      <TableHeader>{I18N.TABLE_HEADER_PAYMENT_ID}</TableHeader>
+                      <TableHeader>{I18N.TABLE_HEADER_DATE}</TableHeader>
+                      <TableHeader>{I18N.TABLE_HEADER_AMOUNT}</TableHeader>
+                      <TableHeader>{I18N.TABLE_HEADER_CUSTOMER}</TableHeader>
+                      <TableHeader>{I18N.TABLE_HEADER_CURRENCY}</TableHeader>
+                      <TableHeader>{I18N.TABLE_HEADER_STATUS}</TableHeader>
+                    </TableHeaderRow>
+                  </TableHeaderWrapper>
+                  <TableBodyWrapper>
                     {payments.map((p) => (
-                      <tr key={p.id}>
-                        <td className="border px-4 py-2">{p.id}</td>
-                        <td className="border px-4 py-2">{p.date.toString()}</td>
-                        <td className="border px-4 py-2">{p.amount}</td>
-                        <td className="border px-4 py-2">{p.customerName}</td>
-                        <td className="border px-4 py-2">{p.currency}</td>
-                        <td className="border px-4 py-2">{p.status}</td>
-                      </tr>
+                      <TableRow key={p.id}>
+                        <TableCell>{p.id}</TableCell>
+                        <TableCell>{new Date(p.date).toLocaleString()}</TableCell>
+                        <TableCell>{formatCurrency(p.amount)}</TableCell>
+                        <TableCell>{p.customerName}</TableCell>
+                        <TableCell>{p.currency}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={p.status.toLowerCase() as "completed" | "pending" | "failed"}>
+                            {p.status}
+                          </StatusBadge>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBodyWrapper>
+                </Table>
+          </TableWrapper>
+
         )}
     </Container>
   );
