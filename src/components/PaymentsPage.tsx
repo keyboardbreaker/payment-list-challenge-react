@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Container } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
+import { getPaymentsQuery } from "../api/api-service";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -12,30 +13,13 @@ export const PaymentsPage = () => {
     const getPayments = async () => {
       setLoading(true);
       setError(null);
-
-      try {
-        const response = await fetch(`/api/payments?page=1&pageSize=5`);
-
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.message || "Failed to fetch payments");
-        }
-
-        const data = await response.json();
-        setPayments(data.payments);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
+      const result = await getPaymentsQuery();
+      setPayments(result.payments);
+      setLoading(false);
+    }
     getPayments();
   }, []);
+
 
   return (
     <Container>
