@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper } from './components'
+import { Container, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
@@ -28,8 +28,19 @@ export const PaymentsPage = () => {
     getPayments();
   }, []);
 
+  const handleSearch = () => {
+
+  }
+
   return (
     <Container>
+      <FlexRow>
+        <Title>All payments</Title>
+      </FlexRow>
+      <FlexRow style={{ justifyContent: "flex-start", alignItems: "center", gap: "0.75rem" }}>
+        <SearchInput name={I18N.SEARCH_LABEL} aria-label={I18N.SEARCH_PLACEHOLDER} placeholder={I18N.SEARCH_PLACEHOLDER} />
+        <SearchButton onClick={handleSearch}>Search</SearchButton>
+      </FlexRow>
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Spinner />
