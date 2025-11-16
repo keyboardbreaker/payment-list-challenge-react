@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
+import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Select, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
 import { formatCurrency } from "../utils/helpers";
+import { CURRENCIES } from "../constants";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -57,6 +58,8 @@ export const PaymentsPage = () => {
 
   const handleClear = () => {
     setSearchTerm("");
+    setCurrency("");
+    setPage(1);
   }
 
   return (
@@ -71,9 +74,21 @@ export const PaymentsPage = () => {
           placeholder={I18N.SEARCH_PLACEHOLDER}
           onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm} />
+        <Select
+          aria-label={I18N.CURRENCY_FILTER_LABEL}
+          onChange={(e) => setCurrency(e.target.value)}
+          value={currency}
+        >
+          <option value="">Currency</option>
+          {CURRENCIES.map((currency) => (
+            <option key={currency} value={currency}>
+              {currency}
+            </option>
+          ))}
+        </Select>
         <SearchButton onClick={handleSearch}>Search</SearchButton>
         {
-          searchTerm !== "" && (
+          searchTerm !== "" && currency !=="" && (
             <ClearButton onClick={handleClear}>{I18N.CLEAR_FILTERS}</ClearButton>
           )
         }
