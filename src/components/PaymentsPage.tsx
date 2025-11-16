@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
+import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
@@ -84,7 +84,8 @@ export const PaymentsPage = () => {
             <span>Loading payments...</span>
           </div>
         )}
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <ErrorBox>{error === "Payment not found" ? I18N.PAYMENT_NOT_FOUND : error}</ErrorBox>}
+
         {!loading && !error && (
           <TableWrapper>
             <Table>
