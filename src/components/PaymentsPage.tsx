@@ -84,7 +84,15 @@ export const PaymentsPage = () => {
             <span>Loading payments...</span>
           </div>
         )}
-        {error && <ErrorBox>{error === "Payment not found" ? I18N.PAYMENT_NOT_FOUND : error}</ErrorBox>}
+        {error && (
+          <ErrorBox>
+            {error === "Payment not found"
+              ? I18N.PAYMENT_NOT_FOUND
+              : error === "Internal Server Error"
+              ? I18N.INTERNAL_SERVER_ERROR
+              : error}
+          </ErrorBox>
+        )}
 
         {!loading && !error && (
           <TableWrapper>
