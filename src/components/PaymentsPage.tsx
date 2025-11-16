@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
+import { ClearButton, Container, FlexRow, SearchButton, SearchInput, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
@@ -55,6 +55,10 @@ export const PaymentsPage = () => {
     }
   };
 
+  const handleClear = () => {
+    setSearchTerm("");
+  }
+
   return (
     <Container>
       <FlexRow>
@@ -68,6 +72,11 @@ export const PaymentsPage = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           value={searchTerm} />
         <SearchButton onClick={handleSearch}>Search</SearchButton>
+        {
+          searchTerm !== "" && (
+            <ClearButton onClick={handleClear}>{I18N.CLEAR_FILTERS}</ClearButton>
+          )
+        }
       </FlexRow>
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
