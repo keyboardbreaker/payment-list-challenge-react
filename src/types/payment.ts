@@ -17,3 +17,10 @@ export interface PaymentSearchResponse {
     page: number;
     pageSize: number;
 }
+
+export interface PaymentQueryParams {
+    search?: string;
+    currency?: string;
+    page?: number;
+    pageSize?: number;
+}

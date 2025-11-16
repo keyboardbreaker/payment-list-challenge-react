@@ -8,7 +8,10 @@ import { formatCurrency } from "../utils/helpers";
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currency, setCurrency] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const getPayments = async () => {
@@ -16,7 +19,12 @@ export const PaymentsPage = () => {
       setError(null);
   
       try {
-        const result = await getPaymentsQuery();
+        const result = await getPaymentsQuery({
+          search: searchTerm,
+          currency,
+          page,
+          pageSize: 5
+        });
         setPayments(result.payments);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "An unexpected error occurred");
@@ -26,11 +34,26 @@ export const PaymentsPage = () => {
     };
   
     getPayments();
-  }, []);
+  }, [currency, page]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+  
+      const result = await getPaymentsQuery({
+        search: searchTerm,
+        page: 1,
+        pageSize: 5
+      });
 
-  }
+      setPayments(result.payments);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unexpected error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Container>
@@ -38,7 +61,12 @@ export const PaymentsPage = () => {
         <Title>All payments</Title>
       </FlexRow>
       <FlexRow style={{ justifyContent: "flex-start", alignItems: "center", gap: "0.75rem" }}>
-        <SearchInput name={I18N.SEARCH_LABEL} aria-label={I18N.SEARCH_PLACEHOLDER} placeholder={I18N.SEARCH_PLACEHOLDER} />
+        <SearchInput 
+          name={I18N.SEARCH_LABEL} 
+          aria-label={I18N.SEARCH_PLACEHOLDER} 
+          placeholder={I18N.SEARCH_PLACEHOLDER}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          value={searchTerm} />
         <SearchButton onClick={handleSearch}>Search</SearchButton>
       </FlexRow>
         {loading && (
