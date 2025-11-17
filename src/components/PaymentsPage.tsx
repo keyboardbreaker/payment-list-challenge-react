@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, ErrorBox, FlexRow, PaginationButton, PaginationRow, SearchButton, SearchInput, Select, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
+import { ClearButton, Container, ErrorBox, FlexRow, PaginationButton, PaginationRow, SearchButton, SearchInput, Select, Spinner, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
-import { formatCurrency } from "../utils/helpers";
 import { CURRENCIES } from "../constants";
+import { PaymentsTable } from "./PaymentsTable";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -125,34 +125,7 @@ export const PaymentsPage = () => {
         
         {!loading && !error && (
           <TableWrapper>
-            <Table>
-              <TableHeaderWrapper>
-                <TableHeaderRow>
-                  <TableHeader>{I18N.TABLE_HEADER_PAYMENT_ID}</TableHeader>
-                  <TableHeader>{I18N.TABLE_HEADER_DATE}</TableHeader>
-                  <TableHeader>{I18N.TABLE_HEADER_AMOUNT}</TableHeader>
-                  <TableHeader>{I18N.TABLE_HEADER_CUSTOMER}</TableHeader>
-                  <TableHeader>{I18N.TABLE_HEADER_CURRENCY}</TableHeader>
-                  <TableHeader>{I18N.TABLE_HEADER_STATUS}</TableHeader>
-                </TableHeaderRow>
-              </TableHeaderWrapper>
-              <TableBodyWrapper>
-                {payments.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell>{p.id}</TableCell>
-                    <TableCell>{new Date(p.date).toLocaleString()}</TableCell>
-                    <TableCell>{formatCurrency(p.amount)}</TableCell>
-                    <TableCell>{p.customerName}</TableCell>
-                    <TableCell>{p.currency}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={p.status.toLowerCase() as "completed" | "pending" | "failed"}>
-                        {p.status}
-                      </StatusBadge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBodyWrapper>
-            </Table>
+            <PaymentsTable payments={payments} />
             <PaginationRow>
               <PaginationButton
                 disabled={page === 1}
