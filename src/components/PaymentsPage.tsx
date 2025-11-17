@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Select, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
+import { ClearButton, Container, ErrorBox, FlexRow, PaginationButton, PaginationRow, SearchButton, SearchInput, Select, Spinner, StatusBadge, Table, TableBodyWrapper, TableCell, TableHeader, TableHeaderRow, TableHeaderWrapper, TableRow, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
@@ -13,6 +13,8 @@ export const PaymentsPage = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currency, setCurrency] = useState("");
   const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const totalPages = Math.ceil(total / 5);
 
   useEffect(() => {
     const getPayments = async () => {
@@ -26,7 +28,9 @@ export const PaymentsPage = () => {
           page,
           pageSize: 5
         });
+
         setPayments(result.payments);
+        setTotal(result.total);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "An unexpected error occurred");
       } finally {
@@ -61,6 +65,16 @@ export const PaymentsPage = () => {
     setCurrency("");
     setPage(1);
   }
+
+  const handleNextPage = () => {
+    setPage(prev => prev + 1);
+  };
+  
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(prev => prev - 1);
+    }
+  };
 
   return (
     <Container>
@@ -108,39 +122,49 @@ export const PaymentsPage = () => {
               : error}
           </ErrorBox>
         )}
-
+        
         {!loading && !error && (
           <TableWrapper>
             <Table>
-                  <TableHeaderWrapper>
-                    <TableHeaderRow>
-                      <TableHeader>{I18N.TABLE_HEADER_PAYMENT_ID}</TableHeader>
-                      <TableHeader>{I18N.TABLE_HEADER_DATE}</TableHeader>
-                      <TableHeader>{I18N.TABLE_HEADER_AMOUNT}</TableHeader>
-                      <TableHeader>{I18N.TABLE_HEADER_CUSTOMER}</TableHeader>
-                      <TableHeader>{I18N.TABLE_HEADER_CURRENCY}</TableHeader>
-                      <TableHeader>{I18N.TABLE_HEADER_STATUS}</TableHeader>
-                    </TableHeaderRow>
-                  </TableHeaderWrapper>
-                  <TableBodyWrapper>
-                    {payments.map((p) => (
-                      <TableRow key={p.id}>
-                        <TableCell>{p.id}</TableCell>
-                        <TableCell>{new Date(p.date).toLocaleString()}</TableCell>
-                        <TableCell>{formatCurrency(p.amount)}</TableCell>
-                        <TableCell>{p.customerName}</TableCell>
-                        <TableCell>{p.currency}</TableCell>
-                        <TableCell>
-                          <StatusBadge status={p.status.toLowerCase() as "completed" | "pending" | "failed"}>
-                            {p.status}
-                          </StatusBadge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBodyWrapper>
-                </Table>
+              <TableHeaderWrapper>
+                <TableHeaderRow>
+                  <TableHeader>{I18N.TABLE_HEADER_PAYMENT_ID}</TableHeader>
+                  <TableHeader>{I18N.TABLE_HEADER_DATE}</TableHeader>
+                  <TableHeader>{I18N.TABLE_HEADER_AMOUNT}</TableHeader>
+                  <TableHeader>{I18N.TABLE_HEADER_CUSTOMER}</TableHeader>
+                  <TableHeader>{I18N.TABLE_HEADER_CURRENCY}</TableHeader>
+                  <TableHeader>{I18N.TABLE_HEADER_STATUS}</TableHeader>
+                </TableHeaderRow>
+              </TableHeaderWrapper>
+              <TableBodyWrapper>
+                {payments.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell>{p.id}</TableCell>
+                    <TableCell>{new Date(p.date).toLocaleString()}</TableCell>
+                    <TableCell>{formatCurrency(p.amount)}</TableCell>
+                    <TableCell>{p.customerName}</TableCell>
+                    <TableCell>{p.currency}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={p.status.toLowerCase() as "completed" | "pending" | "failed"}>
+                        {p.status}
+                      </StatusBadge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBodyWrapper>
+            </Table>
+            <PaginationRow>
+              <PaginationButton
+                disabled={page === 1}
+                onClick={handlePreviousPage}
+              >{I18N.PREVIOUS_BUTTON}</PaginationButton>
+              {I18N.PAGE_LABEL} {page}
+              <PaginationButton
+                disabled={page >= totalPages}
+                onClick={handleNextPage}
+              >{I18N.NEXT_BUTTON}</PaginationButton>
+            </PaginationRow>
           </TableWrapper>
-
         )}
     </Container>
   );
