@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Select, Spinner, TableWrapper, Title } from './components'
+import { Container, ErrorBox, FlexRow, Spinner, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
-import { CURRENCIES } from "../constants";
 import { PaymentsTable } from "./PaymentsTable";
 import { Pagination } from "./Pagination";
+import { PaymentsFilters } from "./PaymentsFilters";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -71,32 +71,14 @@ export const PaymentsPage = () => {
       <FlexRow>
         <Title>All payments</Title>
       </FlexRow>
-      <FlexRow style={{ justifyContent: "flex-start", alignItems: "center", gap: "0.75rem" }}>
-        <SearchInput 
-          name={I18N.SEARCH_LABEL} 
-          aria-label={I18N.SEARCH_PLACEHOLDER} 
-          placeholder={I18N.SEARCH_PLACEHOLDER}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          value={searchTerm} />
-        <Select
-          aria-label={I18N.CURRENCY_FILTER_LABEL}
-          onChange={(e) => setCurrency(e.target.value)}
-          value={currency}
-        >
-          <option value="">Currency</option>
-          {CURRENCIES.map((currency) => (
-            <option key={currency} value={currency}>
-              {currency}
-            </option>
-          ))}
-        </Select>
-        <SearchButton onClick={handleSearch}>Search</SearchButton>
-        {
-          searchTerm !== "" && currency !=="" && (
-            <ClearButton onClick={handleClear}>{I18N.CLEAR_FILTERS}</ClearButton>
-          )
-        }
-      </FlexRow>
+      <PaymentsFilters
+        searchTerm={searchTerm}
+        currency={currency}
+        onSearchTermChange={setSearchTerm}
+        onCurrencyChange={setCurrency}
+        onSearch={handleSearch}
+        onClear={handleClear}
+      />
         {loading && (
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Spinner />
