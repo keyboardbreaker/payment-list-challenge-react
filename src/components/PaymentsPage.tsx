@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { ClearButton, Container, ErrorBox, FlexRow, PaginationButton, PaginationRow, SearchButton, SearchInput, Select, Spinner, TableWrapper, Title } from './components'
+import { ClearButton, Container, ErrorBox, FlexRow, SearchButton, SearchInput, Select, Spinner, TableWrapper, Title } from './components'
 import { Payment } from "../types/payment";
 import { I18N } from "../constants/i18n";
 import { getPaymentsQuery } from "../api/api-service";
 import { CURRENCIES } from "../constants";
 import { PaymentsTable } from "./PaymentsTable";
+import { Pagination } from "./Pagination";
 
 export const PaymentsPage = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
@@ -14,7 +15,6 @@ export const PaymentsPage = () => {
   const [currency, setCurrency] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const totalPages = Math.ceil(total / 5);
 
   useEffect(() => {
     const getPayments = async () => {
@@ -66,16 +66,6 @@ export const PaymentsPage = () => {
     setPage(1);
   }
 
-  const handleNextPage = () => {
-    setPage(prev => prev + 1);
-  };
-  
-  const handlePreviousPage = () => {
-    if (page > 1) {
-      setPage(prev => prev - 1);
-    }
-  };
-
   return (
     <Container>
       <FlexRow>
@@ -126,17 +116,12 @@ export const PaymentsPage = () => {
         {!loading && !error && (
           <TableWrapper>
             <PaymentsTable payments={payments} />
-            <PaginationRow>
-              <PaginationButton
-                disabled={page === 1}
-                onClick={handlePreviousPage}
-              >{I18N.PREVIOUS_BUTTON}</PaginationButton>
-              {I18N.PAGE_LABEL} {page}
-              <PaginationButton
-                disabled={page >= totalPages}
-                onClick={handleNextPage}
-              >{I18N.NEXT_BUTTON}</PaginationButton>
-            </PaginationRow>
+            <Pagination
+              page={page}
+              pageSize={5}
+              total={total}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
           </TableWrapper>
         )}
     </Container>
